@@ -210,6 +210,14 @@ function exportarExcel() {
     link.setAttribute("href", url); link.setAttribute("download", "controle_ressarcimentos.csv");
     document.body.appendChild(link); link.click(); document.body.removeChild(link);
 }
-
+// Verifica se o usuário tem permissão para estar nesta página
+async function protegerPagina() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) {
+        // Se não tiver sessão (não logou), chuta de volta pro index
+        window.location.replace('index.html');
+    }
+}
+protegerPagina();
 // INICIALIZAÇÃO
 carregarRessarcimentos();

@@ -3,27 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Sistema de Gestão</title>
+    <title>Login - Controle Interno</title>
     <link rel="stylesheet" href="style.css">
-</head>
-<body class="login-body">
-    <div class="login-container">
-        <h2>Acesso ao Sistema</h2>
-        <p>Insira suas credenciais para continuar</p>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f4f8;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            border-top: 5px solid #003366; /* Azul FAB */
+        }
+        .login-container img { width: 80px; margin-bottom: 20px; }
+        .login-container h2 { color: #2c3e50; margin-bottom: 5px; }
+        .login-container p { color: #7f8c8d; font-size: 14px; margin-bottom: 30px; }
         
-        <form id="formLogin" onsubmit="fazerLogin(event)">
-            <input type="text" id="usuario" placeholder="Usuário" required>
-            <input type="password" id="senha" placeholder="Senha" required>
-            <button type="submit" class="btn-login">Entrar</button>
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-group label { display: block; margin-bottom: 8px; color: #2c3e50; font-weight: bold; font-size: 14px; }
+        .input-group input { 
+            width: 100%; padding: 12px; border: 1px solid #ccc; 
+            border-radius: 6px; box-sizing: border-box; font-size: 14px;
+        }
+        .input-group input:focus { border-color: #003366; outline: none; }
+        
+        .btn-login {
+            width: 100%; padding: 12px; background: #003366; color: white;
+            border: none; border-radius: 6px; font-size: 16px; font-weight: bold;
+            cursor: pointer; transition: background 0.3s;
+        }
+        .btn-login:hover { background: #002244; }
+        
+        #mensagemErro { color: #e74c3c; font-size: 14px; margin-top: 15px; display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <img src="Gládio Alado FAB.png" alt="Logo FAB">
+        <h2>Controle Interno</h2>
+        <p>Acesso restrito à Assessoria</p>
+
+        <form id="formLogin">
+            <div class="input-group">
+                <label for="email">E-mail Corporativo</label>
+                <input type="email" id="email" required placeholder="Digite seu e-mail">
+            </div>
+            <div class="input-group">
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" required placeholder="Digite sua senha">
+            </div>
+            <button type="submit" class="btn-login" id="btnEntrar">Entrar no Sistema</button>
+            <div id="mensagemErro">E-mail ou senha incorretos.</div>
         </form>
     </div>
 
     <script>
-        function fazerLogin(event) {
-            event.preventDefault();
-            // Por enquanto o login é direto. Depois podemos criar senhas reais.
-            window.location.href = "menu.html";
+        // 1. CONFIGURAÇÃO (Cole sua KEY do Supabase aqui)
+        const SUPABASE_URL = 'https://dshwyroaucbrinwnptfmy.supabase.co'; 
+        const SUPABASE_KEY = 'SUA_CHAVE_AQUI_QUE_COMECA_COM_SB_PUBLISHABLE'; 
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // 2. LÓGICA DE LOGIN
+        document.getElementById('formLogin').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
+            const btn = document.getElementById('btnEntrar');
+            const erroMsg = document.getElementById('mensagemErro');
+
+            btn.innerText = "Autenticando...";
+            erroMsg.style.display = 'none';
+
+            // Chama a autenticação do Supabase
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: senha,
+            });
+
+            if (error) {
+                btn.innerText = "Entrar no Sistema";
+                erroMsg.style.display = 'block';
+                erroMsg.innerText = "Erro: " + error.message;
+            } else {
+                // Se deu certo, vai para o painel!
+                window.location.href = "menu.html";
+            }
+        });
+
+        // 3. VERIFICA SE JÁ ESTÁ LOGADO
+        async function verificarSessao() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                window.location.href = "menu.html"; // Já tem login, pula a tela
+            }
         }
+        verificarSessao();
     </script>
+
+
 </body>
 </html>
