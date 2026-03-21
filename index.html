@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sistema de Gestão</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="login-body">
+    <div class="login-container">
+        <h2>Acesso ao Sistema</h2>
+        <p>Insira suas credenciais para continuar</p>
+        
+        <form id="formLogin" onsubmit="fazerLogin(event)">
+            <input type="text" id="usuario" placeholder="Usuário" required>
+            <input type="password" id="senha" placeholder="Senha" required>
+            <button type="submit" class="btn-login">Entrar</button>
+        </form>
+    </div>
+
+    <script>
+        function fazerLogin(event) {
+            event.preventDefault();
+            // Por enquanto o login é direto. Depois podemos criar senhas reais.
+            window.location.href = "menu.html";
+        }
+    </script>
+</body>
+</html>

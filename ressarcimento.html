@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Ressarcimentos</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="app-layout">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><img src="Gládio Alado FAB.png" alt="Gládio FAB" style="width: 35px; vertical-align: middle; margin-right: 8px;">Controle Interno</h2>
+            </div>
+            <nav class="sidebar-menu">
+                <a href="menu.html" class="menu-item">
+                    <i class="fa-solid fa-house"></i> Início
+                </a>
+                <a href="notas.html" class="menu-item">
+                    <i class="fa-solid fa-file-invoice-dollar"></i> Controle de Notas
+                </a>
+                <a href="ressarcimento.html" class="menu-item ativo">
+                    <i class="fa-solid fa-hand-holding-dollar"></i> Ressarcimentos
+                </a>
+                <a href="#" class="menu-item inativo">
+                    <i class="fa-solid fa-folder-tree"></i> Processos
+                </a>
+                <a href="#" class="menu-item inativo">
+                    <i class="fa-solid fa-file-contract"></i> Controle de RSC
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div class="breadcrumb">
+                    <i class="fa-solid fa-house"></i> / Módulos / <strong>Controle de Ressarcimentos</strong>
+                </div>
+                <div class="user-profile">
+                    <h2><img src="Gládio Alado FAB.png" alt="Gládio FAB" style="width: 35px; vertical-align: middle; margin-right: 8px;"></h2>
+                    <span>Assessoria de Controle Interno</span>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                <section class="dashboard">
+                    <div class="card destaque">
+                        <h3>Qtd Conferidas</h3>
+                        <p id="qtdConferida">0</p>
+                    </div>
+                    <div class="card alerta">
+                        <h3>Qtd Retornadas</h3>
+                        <p id="qtdRetornada">0</p>
+                    </div>
+                </section>
+
+                <section class="form-section">
+                    <h3 id="tituloFormulario"><i class="fa-solid fa-plus"></i> Adicionar Ressarcimento</h3>
+                    <form id="formRessarcimento">
+                        <input type="hidden" id="ressarcimentoIndex" value="-1">
+                        <input type="text" id="subprocesso" placeholder="Nº do Subprocesso" required>
+                        <input type="text" id="opcao" placeholder="Opção de Ressarcimento" required>
+                        <input type="date" id="dataConferencia" required title="Data de Conferência">
+                        <select id="status" required>
+                            <option value="" disabled selected>Status...</option>
+                            <option value="Conferida">Conferida</option>
+                            <option value="Retornada">Retornada</option>
+                        </select>
+                        <button type="submit" id="btnSalvar">Salvar Registro</button>
+                        <button type="button" id="btnCancelar" style="display: none; background-color: #95a5a6;">Cancelar</button>
+                    </form>
+                </section>
+
+                <section class="filters-section">
+                    <h3><i class="fa-solid fa-filter"></i> Filtros de Busca</h3>
+                    <div class="filters-grid">
+                        <input type="text" id="filtroSubprocesso" placeholder="Buscar por Nº do Subprocesso">
+                        <select id="filtroStatus">
+                            <option value="">Todos os Status</option>
+                            <option value="Conferida">Conferida</option>
+                            <option value="Retornada">Retornada</option>
+                        </select>
+                        <select id="filtroMesSelect">
+                            <option value="">Mês</option>
+                            <option value="01">Jan</option><option value="02">Fev</option>
+                            <option value="03">Mar</option><option value="04">Abr</option>
+                            <option value="05">Mai</option><option value="06">Jun</option>
+                            <option value="07">Jul</option><option value="08">Ago</option>
+                            <option value="09">Set</option><option value="10">Out</option>
+                            <option value="11">Nov</option><option value="12">Dez</option>
+                        </select>
+                        <select id="filtroAnoSelect">
+                            <option value="">Ano</option>
+                            <option value="2024">2024</option><option value="2025">2025</option>
+                            <option value="2026">2026</option>
+                        </select>
+                    </div>
+                    
+                    <div id="resumoMes" class="resumo-mes" style="display: none;">
+                        <strong>Resumo do Período:</strong> <span id="qtdMes">0</span> registro(s) filtrado(s).<br>
+                        <span style="color: #2ecc71; font-weight: bold;">✔ Conferidas: <span id="qtdMesConf">0</span></span> | 
+                        <span style="color: #e74c3c; font-weight: bold;">✖ Retornadas: <span id="qtdMesRet">0</span></span>
+                    </div>
+                </section>
+
+                <section class="table-section">
+                    <button class="btn-excel" onclick="exportarExcel()"><i class="fa-solid fa-file-excel"></i> Exportar</button>
+                    <div style="clear: both; margin-bottom: 10px;"></div>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nº Subprocesso</th>
+                                <th>Opção de Ressarcimento</th>
+                                <th>Data de Conferência</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaCorpo"></tbody>
+                    </table>
+
+                    <div id="paginacao-container" class="paginacao-container"></div>
+                </section>
+                
+                <footer><p>Sistema desenvolvido por 3s QScon Alex Moreira</p></footer>
+            </div>
+        </main>
+    </div>
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="ressarcimento.js"></script>
+</body>
+</html>
