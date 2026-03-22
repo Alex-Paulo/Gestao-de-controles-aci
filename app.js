@@ -251,6 +251,9 @@ function exportarExcel() {
     document.body.appendChild(link); link.click(); document.body.removeChild(link);
 }
 
+// INICIALIZAÇÃO
+carregarNotas();
+
 // Verifica se o usuário tem permissão para estar nesta página
 async function protegerPagina() {
     const { data: { session } } = await supabaseClient.auth.getSession();
@@ -261,5 +264,20 @@ async function protegerPagina() {
 }
 protegerPagina();
 
-// INICIALIZAÇÃO
-carregarNotas();
+// Função para encerrar a sessão com segurança
+async function fazerLogout() {
+    const btn = document.querySelector('.btn-sair');
+    if(btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saindo...';
+
+    // Pede pro Supabase encerrar a sessão
+    const { error } = await supabaseClient.auth.signOut();
+    
+    if (error) {
+        console.error("Erro ao sair:", error);
+        alert("Erro ao tentar sair do sistema.");
+        if(btn) btn.innerHTML = '<i class="fa-solid fa-right-from-bracket"></i> Sair';
+    } else {
+        // Se deu certo, joga de volta pra tela de login
+        window.location.replace("index.html");
+    }
+}
