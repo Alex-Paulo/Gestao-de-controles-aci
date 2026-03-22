@@ -159,5 +159,29 @@
 
         carregarResumos();
     </script>
+    <script>
+        // Função garantida de Logout embutida direto no HTML
+        window.fazerLogout = async function() {
+            const btn = document.querySelector('.btn-sair');
+            if(btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saindo...';
+
+            try {
+                // Chama a saída do Supabase
+                const { error } = await supabaseClient.auth.signOut();
+                
+                if (error) throw error;
+                
+                // Vai pra tela de login
+                window.location.replace("index.html");
+                
+            } catch (error) {
+                console.error("Erro:", error);
+                alert("Erro ao sair. Atualize a página e tente novamente.");
+                if(btn) btn.innerHTML = '<i class="fa-solid fa-right-from-bracket"></i> Sair';
+            }
+        };
+    </script>
+</body>
+</html>
 </body>
 </html>
