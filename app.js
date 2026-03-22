@@ -265,7 +265,7 @@ async function protegerPagina() {
 protegerPagina();
 
 // Função para encerrar a sessão com segurança
-async function fazerLogout() {
+window.fazerLogout = async function() {
     const btn = document.querySelector('.btn-sair');
     if(btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saindo...';
 
