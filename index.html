@@ -75,6 +75,7 @@
         // 1. CONFIGURAÇÃO 
 const SUPABASE_URL = 'https://dshwyroaucbriwnptfmy.supabase.co'; 
 const SUPABASE_KEY = 'sb_publishable_-AVQqp-pCUdb6HFDQRBWqA_e8YmKZAZ';
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // 2. LÓGICA DE LOGIN
         document.getElementById('formLogin').addEventListener('submit', async function(e) {
